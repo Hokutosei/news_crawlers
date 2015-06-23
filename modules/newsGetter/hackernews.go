@@ -23,6 +23,8 @@ func StartHackerNews(loopCounterDelay int) {
 
 	for t := range time.Tick(time.Duration(loopCounterDelay) * time.Second) {
 
+		timeProfiler := make(chan string)
+
 		topStoriesIds, err := topStoriesID()
 		if err != nil {
 			fmt.Println("skipping, err from topStoriesId")
@@ -30,15 +32,19 @@ func StartHackerNews(loopCounterDelay int) {
 		}
 		fmt.Println("running the loop: ", t)
 
-		wg.Add(len(topStoriesIds))
+		c := make(chan int)
 		for _, id := range topStoriesIds {
-			go func(id int) {
-				readNews := make(chan jsonNewsBody)
-				hackerNewsReader(id, readNews)
-				// ContentOutPut(newsContent, &wg)
-			}(id)
+			wg.Add(1)
+			go func(id int, timeProfiler chan string) {
+				start := time.Now()
+				newsContent := hackerNewsReader(id)
+				ContentOutPut(newsContent, &wg)
+
+				timeProfiler <- fmt.Sprintf("HN loop took: %v", time.Since(start))
+			}(id, timeProfiler)
 		}
 		wg.Wait()
+		close(c)
 	}
 }
 
@@ -79,19 +85,19 @@ func topStoriesID() ([]int, error) {
 	return idContainers, nil
 }
 
-func hackerNewsReader(id int, chanNews chan jsonNewsBody) {
+func hackerNewsReader(id int) jsonNewsBody {
 	newsURL := fmt.Sprintf("https://hacker-news.firebaseio.com/v0/item/%d.json", id)
 	var newsContent jsonNewsBody
 	response, err := httpGet(newsURL)
 	if err != nil {
 		fmt.Println(err)
-		return newsContent, err
+		return newsContent
 	}
 	defer response.Body.Close()
 
 	contents, _ := responseReader(response)
 	if err := json.Unmarshal(contents, &newsContent); err != nil {
-		return newsContent, err
+		return newsContent
 	}
-	return newsContent, nil
+	return newsContent
 }

@@ -38,11 +38,6 @@ func MongodbStart() {
 
 	host := <-mongodbCluster
 	connectionStr := fmt.Sprintf("mongodb://%v/?maxPoolSize=10", host)
-	// fmt.Println(connectionStr)
-	// mongoDBDialInfo := &mongodb.DialInfo{
-	// 	Addrs:   []string{connectionStr},
-	// 	Timeout: 10 * time.Second,
-	// }
 
 	session, err := mongodb.Dial(connectionStr)
 	if err != nil {
