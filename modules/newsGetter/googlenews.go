@@ -48,28 +48,29 @@ func TopicsList() Topics {
 func StartGoogleNews(googleLoopCounterDelay int) {
 	fmt.Println("startgoogle news launched!")
 
-	var wg sync.WaitGroup
 	for t := range time.Tick(time.Duration(googleLoopCounterDelay) * time.Second) {
 		_ = t
 
-		c := make(chan int)
 		fmt.Println("loop will start")
-		for k, v := range TopicsList() {
-			wg.Add(1)
-			go func(k string, v TopicIdentity) {
-				fmt.Println("running loop")
-				GoogleNewsRequester(googleURLConstructor(v.Initial), v, &wg)
-			}(k, v)
-			// wg.Done()
+		var wsg sync.WaitGroup
+		n := make(chan GoogleNewsResponseData)
+		for _, v := range TopicsList() {
+			wsg.Add(1)
+			go func(v TopicIdentity) {
+				go GoogleNewsRequester(googleURLConstructor(v.Initial), v, n, &wsg)
+
+				result := <-n
+				GoogleNewsRW(result, v)
+			}(v)
 		}
-		wg.Wait()
-		close(c)
+		wsg.Wait()
+		close(n)
 	}
 }
 
 // GoogleNewsRequester google news http getter
-func GoogleNewsRequester(url string, topic TopicIdentity, wsg *sync.WaitGroup) {
-	defer wsg.Done()
+func GoogleNewsRequester(url string, topic TopicIdentity, c chan GoogleNewsResponseData, wg *sync.WaitGroup) {
+	defer wg.Done()
 	var googleNews GoogleNewsResponseData
 	response, err := httpGet(url)
 	if err != nil {
@@ -83,25 +84,27 @@ func GoogleNewsRequester(url string, topic TopicIdentity, wsg *sync.WaitGroup) {
 	if err := json.Unmarshal(contents, &googleNews); err != nil {
 		//return id_containers
 		fmt.Println(err)
+		c <- googleNews
+		return
 	}
+	c <- googleNews
+}
 
-	GNResponse := googleNews.ResponseData
+// GoogleNewsRW read and write data from google news
+func GoogleNewsRW(gn GoogleNewsResponseData, topic TopicIdentity) {
 	var wg sync.WaitGroup
-	for _, gn := range GNResponse.Results {
+	for _, g := range gn.ResponseData.Results {
 		// set news item category
-		gn.Category = topic
+		g.Category = topic
 		wg.Add(1)
-		go func(gn GoogleNewsResults) {
-			GoogleNewsDataSetter(gn, &wg)
-		}(gn)
+		GoogleNewsDataSetter(g, &wg)
 	}
 	wg.Wait()
 }
 
 // GoogleNewsDataSetter builds and construct data for insertion
 func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
-	canSave := database.GoogleNewsFindIfExist(googleNews.Title)
-
+	defer wg.Done()
 	jsonNews := &jsonNewsBody{
 		Title:          googleNews.Title,
 		By:             "GoogleNews",
@@ -116,14 +119,13 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	}
 
 	// check if data exists already, need refactoring though
-	if canSave {
-		saved := database.GoogleNewsInsert(jsonNews, wg)
-		if saved {
-			fmt.Println("saved!! google news!")
-			return
-		}
-		fmt.Println("did not save!")
+	saved := database.GoogleNewsInsert(jsonNews, googleNews.Title)
+	if saved {
+		fmt.Println("saved!! google news!")
+		return
 	}
+
+	fmt.Println("did not save!")
 }
 
 //googleUrlConstructor return url string

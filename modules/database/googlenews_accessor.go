@@ -2,8 +2,8 @@ package database
 
 import (
 	"fmt"
-	"sync"
 
+	mongodb "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -15,11 +15,14 @@ var (
 )
 
 // GoogleNewsInsert insert data for google news
-func GoogleNewsInsert(hn GoogleNews, wg *sync.WaitGroup) bool {
-	defer wg.Done()
+func GoogleNewsInsert(hn GoogleNews, title string) bool {
 	sc := SessionCopy()
 	c := sc.DB(Db).C(googleNewsCollection)
 	defer sc.Close()
+
+	if !GoogleNewsFindIfExist(title, sc) {
+		return false
+	}
 
 	err := c.Insert(hn)
 	if err != nil {
@@ -31,10 +34,8 @@ func GoogleNewsInsert(hn GoogleNews, wg *sync.WaitGroup) bool {
 }
 
 // GoogleNewsFindIfExist check google news current data if exist before insert
-func GoogleNewsFindIfExist(title string) bool {
-	sc := SessionCopy()
+func GoogleNewsFindIfExist(title string, sc *mongodb.Session) bool {
 	c := sc.DB(Db).C(googleNewsCollection)
-	defer sc.Close()
 
 	var result map[string]interface{}
 	c.Find(bson.M{"title": title}).One(&result)
