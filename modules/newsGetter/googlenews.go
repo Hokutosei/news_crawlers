@@ -3,6 +3,7 @@ package newsGetter
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"sync"
 	"time"
 	"web_apps/news_crawlers/modules/database"
@@ -51,7 +52,7 @@ func StartGoogleNews(googleLoopCounterDelay int) {
 	for t := range time.Tick(time.Duration(googleLoopCounterDelay) * time.Second) {
 		_ = t
 
-		fmt.Println("loop will start")
+		log.Println("loop will start")
 		var wsg sync.WaitGroup
 		n := make(chan GoogleNewsResponseData)
 		for _, v := range TopicsList() {
@@ -121,11 +122,11 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	// check if data exists already, need refactoring though
 	saved := database.GoogleNewsInsert(jsonNews, googleNews.Title)
 	if saved {
-		fmt.Println("saved!! google news!")
+		log.Println("saved!! google news!")
 		return
 	}
 
-	fmt.Println("did not save!")
+	log.Println("did not save!")
 }
 
 //googleUrlConstructor return url string
