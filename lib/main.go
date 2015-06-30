@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	loopDelay = 60
+	loopDelay = 300
 )
 
 // main entrypoint of the program

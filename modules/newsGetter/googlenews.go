@@ -106,6 +106,7 @@ func GoogleNewsRW(gn GoogleNewsResponseData, topic TopicIdentity) {
 // GoogleNewsDataSetter builds and construct data for insertion
 func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	defer wg.Done()
+	start := time.Now()
 	jsonNews := &jsonNewsBody{
 		Title:          googleNews.Title,
 		By:             "GoogleNews",
@@ -122,7 +123,8 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	// check if data exists already, need refactoring though
 	saved := database.GoogleNewsInsert(jsonNews, googleNews.Title)
 	if saved {
-		log.Println("saved!! google news!")
+		end := time.Since(start)
+		log.Println("saved!! google news! took: ", end)
 		return
 	}
 
@@ -131,6 +133,6 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 
 //googleUrlConstructor return url string
 func googleURLConstructor(v string) string {
-	url := fmt.Sprintf("https://ajax.googleapis.com/ajax/services/search/news?v=1.0&topic=%s&ned=jp&userip=192.168.0.1", v)
+	url := fmt.Sprintf("https://ajax.googleapis.com/ajax/services/search/news?v=1.0&topic=%s&ned=jp&userip=127.0.0.1", v)
 	return url
 }
