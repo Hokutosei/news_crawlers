@@ -1,7 +1,7 @@
 FROM ubuntu:wily
 
 MAINTAINER jeanepaul@gmail.com
-# docker run -d -v "$(pwd)":/go/src/web_apps/news_crawlers news_crawlers
+# docker run -d -v "$(pwd)":/go/src/web_apps/news_crawlers -e "COREOS_PRIVATE_IPV4=" jeanepaul/news_crawlers
 
 # gcc for cgo
 RUN apt-get update && apt-get install -y \
