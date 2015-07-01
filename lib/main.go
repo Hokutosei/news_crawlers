@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"web_apps/news_crawlers/modules/config"
 	"web_apps/news_crawlers/modules/database"
 	"web_apps/news_crawlers/modules/newsGetter"
 )
@@ -14,6 +15,8 @@ var (
 func main() {
 	// strt getting analytics
 	// InitNewRelic()
+
+	config.StartEtcd()
 
 	// connect to mongodb
 	go database.MongodbStart()
