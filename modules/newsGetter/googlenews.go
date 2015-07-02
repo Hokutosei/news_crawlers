@@ -75,6 +75,7 @@ func GoogleNewsRequester(url string, topic TopicIdentity, c chan GoogleNewsRespo
 	var googleNews GoogleNewsResponseData
 	response, err := httpGet(url)
 	if err != nil {
+		fmt.Println(err)
 		fmt.Println("got error google!")
 		return
 	}
@@ -133,6 +134,7 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 
 //googleUrlConstructor return url string
 func googleURLConstructor(v string) string {
+	// https://ajax.googleapis.com/ajax/services/search/news?v=1.0&topic=t&ned=jp&userip=127.0.0.1
 	url := fmt.Sprintf("https://ajax.googleapis.com/ajax/services/search/news?v=1.0&topic=%s&ned=jp&userip=127.0.0.1", v)
 	return url
 }

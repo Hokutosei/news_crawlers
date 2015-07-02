@@ -33,8 +33,6 @@ func getOsMachinePrivateIP() {
 	osEnvStr := []string{"COREOS_PRIVATE_IPV4", "LOCALHOST_IP"}
 	for _, env := range osEnvStr {
 		e := os.Getenv(env)
-		fmt.Println(e)
-		fmt.Println("debug----")
 		if e != "" {
 			envVar = e
 			break
@@ -82,4 +80,10 @@ func EtcdRawGetValue(key string) (string, error) {
 	}
 
 	return data.Node.Value, nil
+}
+
+// GetEnvVar will get environment variable from OS
+func GetEnvVar(keyEnv string) string {
+	e := os.Getenv(keyEnv)
+	return e
 }
