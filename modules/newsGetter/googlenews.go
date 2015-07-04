@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 	"web_apps/news_crawlers/modules/database"
+	"web_apps/news_crawlers/modules/newsCache"
 )
 
 // GoogleNews interface for google news
@@ -51,10 +52,11 @@ func StartGoogleNews(googleLoopCounterDelay int) {
 
 	for t := range time.Tick(time.Duration(googleLoopCounterDelay) * time.Second) {
 		_ = t
-
 		log.Println("loop will start")
+
 		var wsg sync.WaitGroup
 		n := make(chan GoogleNewsResponseData)
+		cs := make(chan bool)
 		for _, v := range TopicsList() {
 			wsg.Add(1)
 			go func(v TopicIdentity) {
@@ -66,6 +68,9 @@ func StartGoogleNews(googleLoopCounterDelay int) {
 		}
 		wsg.Wait()
 		close(n)
+
+		// cache index news keys
+		newsCache.NewsIndexCache(cs)
 	}
 }
 
@@ -126,10 +131,10 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	if saved {
 		end := time.Since(start)
 		log.Println("saved!! google news! took: ", end)
-		return
-	}
 
-	log.Println("did not save!")
+	} else {
+		log.Println("did not save!")
+	}
 }
 
 //googleUrlConstructor return url string

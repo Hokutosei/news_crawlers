@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	loopDelay = 300
+	loopDelay = 10
 )
 
 // CalcLoopDlay get from ENV our loop delay
@@ -32,6 +32,7 @@ func main() {
 
 	// connect to mongodb
 	go database.MongodbStart()
+	go database.StartRedis()
 
 	fmt.Println("starting!")
 	// newsGetter.StartHackerNews(loopDelay)

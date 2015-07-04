@@ -42,6 +42,26 @@ func NewsMainIndexNews() (AggregatedNews, error) {
 	return aggregatedNews, nil
 }
 
+// NewsIds struct for result IDS only
+type NewsIds struct {
+	ID bson.ObjectId "_id"
+}
+
+// NewsIndexNewsIDS retrieve all news index ids and save to cache
+func NewsIndexNewsIDS() ([]NewsIds, error) {
+	sc := SessionCopy()
+	c := sc.DB(Db).C(NewsMainCollection)
+	defer sc.Close()
+
+	var aggregatedNews []NewsIds
+	err := c.Find(bson.M{"url": bson.M{"$ne": ""}}).Select(bson.M{"_id": 1}).Sort("-_id", "-score").Limit(searchLimitItems).All(&aggregatedNews)
+	if err != nil {
+		fmt.Println(err)
+		return aggregatedNews, err
+	}
+	return aggregatedNews, nil
+}
+
 //GetterNewsMainTopScore main top page news getter
 func GetterNewsMainTopScore() (AggregatedNews, error) {
 	c := MongodbSession.DB(Db).C(NewsMainCollection)
