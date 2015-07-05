@@ -4,6 +4,13 @@ import (
 	"fmt"
 	"strings"
 	"web_apps/news_crawlers/modules/database"
+
+	"gopkg.in/mgo.v2/bson"
+)
+
+var (
+	newsIndexKeySlice = []string{"index", "ids"}
+	newsIndexIDS      []bson.ObjectId
 )
 
 // NewsIndexCache make an index news for fast access
@@ -15,22 +22,33 @@ func NewsIndexCache(stop chan bool) {
 		return
 	}
 
-	for _, i := range result {
-		pushIDredis(i.ID.Hex())
-	}
+	pushIDredis(result...)
 }
 
-func pushIDredis(ID string) {
+func pushIDredis(IDS ...database.NewsIds) {
 	conn := database.RedisPool.Get()
 	defer conn.Close()
 
-	keySlice := []string{"index", "ids"}
-	key := RedisKeyGen(keySlice...)
+	key := RedisKeyGen(newsIndexKeySlice...)
 
-	_, err := conn.Do("LPUSH", key, ID)
+	_, err := conn.Do("LPUSH", key, IDS)
 	if err != nil {
 		fmt.Println(err)
 		return
+	}
+}
+
+// DeleteKey remove keys from redis
+func DeleteKey(keys ...string) {
+	conn := database.RedisPool.Get()
+	defer conn.Close()
+
+	for _, key := range keys {
+		_, err := conn.Do("DEL", key)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
 }
 

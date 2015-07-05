@@ -3,8 +3,8 @@ package database
 import (
 	"flag"
 	"fmt"
-	"projectA/modules/config"
 	"time"
+	"web_apps/news_crawlers/modules/config"
 
 	"github.com/garyburd/redigo/redis"
 )

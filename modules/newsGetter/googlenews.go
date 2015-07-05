@@ -60,10 +60,10 @@ func StartGoogleNews(googleLoopCounterDelay int) {
 		for _, v := range TopicsList() {
 			wsg.Add(1)
 			go func(v TopicIdentity) {
-				go GoogleNewsRequester(googleURLConstructor(v.Initial), v, n, &wsg)
+				go GoogleNewsRequester(googleURLConstructor(v.Initial), v, n)
 
 				result := <-n
-				GoogleNewsRW(result, v)
+				GoogleNewsRW(result, v, &wsg)
 			}(v)
 		}
 		wsg.Wait()
@@ -75,8 +75,7 @@ func StartGoogleNews(googleLoopCounterDelay int) {
 }
 
 // GoogleNewsRequester google news http getter
-func GoogleNewsRequester(url string, topic TopicIdentity, c chan GoogleNewsResponseData, wg *sync.WaitGroup) {
-	defer wg.Done()
+func GoogleNewsRequester(url string, topic TopicIdentity, c chan GoogleNewsResponseData) {
 	var googleNews GoogleNewsResponseData
 	response, err := httpGet(url)
 	if err != nil {
@@ -98,15 +97,16 @@ func GoogleNewsRequester(url string, topic TopicIdentity, c chan GoogleNewsRespo
 }
 
 // GoogleNewsRW read and write data from google news
-func GoogleNewsRW(gn GoogleNewsResponseData, topic TopicIdentity) {
-	var wg sync.WaitGroup
+func GoogleNewsRW(gn GoogleNewsResponseData, topic TopicIdentity, wg *sync.WaitGroup) {
+	var wsg sync.WaitGroup
 	for _, g := range gn.ResponseData.Results {
 		// set news item category
 		g.Category = topic
-		wg.Add(1)
-		GoogleNewsDataSetter(g, &wg)
+		wsg.Add(1)
+		GoogleNewsDataSetter(g, &wsg)
 	}
-	wg.Wait()
+	wsg.Wait()
+	wg.Done()
 }
 
 // GoogleNewsDataSetter builds and construct data for insertion
@@ -131,10 +131,10 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	if saved {
 		end := time.Since(start)
 		log.Println("saved!! google news! took: ", end)
-
-	} else {
-		log.Println("did not save!")
+		return
 	}
+
+	log.Println("did not save!")
 }
 
 //googleUrlConstructor return url string
