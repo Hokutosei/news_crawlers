@@ -43,7 +43,7 @@ func pushIDredis(IDS ...database.NewsIds) {
 	conn.Send("DEL", key)
 
 	for _, id := range strID {
-		conn.Send("RPUSH", key, id)
+		conn.Send("RPUSHX", key, id)
 	}
 	conn.Flush()
 	res, err := conn.Receive()
