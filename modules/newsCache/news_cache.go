@@ -3,6 +3,7 @@ package newsCache
 import (
 	"fmt"
 	"strings"
+	"time"
 	"web_apps/news_crawlers/modules/database"
 
 	"gopkg.in/mgo.v2/bson"
@@ -26,16 +27,29 @@ func NewsIndexCache(stop chan bool) {
 }
 
 func pushIDredis(IDS ...database.NewsIds) {
+	start := time.Now()
 	conn := database.RedisPool.Get()
 	defer conn.Close()
 
 	key := RedisKeyGen(newsIndexKeySlice...)
+	var strID []string
+	for _, item := range IDS {
+		strID = append(strID, item.ID.Hex())
+	}
 
-	_, err := conn.Do("LPUSH", key, IDS)
+	// DELETE existing
+	conn.Send("DEL", key)
+
+	for _, id := range strID {
+		conn.Send("LPUSH", key, id)
+	}
+	conn.Flush()
+	res, err := conn.Receive()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println("push to cache index took: ", time.Since(start), "and redis: ", res)
 }
 
 // DeleteKey remove keys from redis
