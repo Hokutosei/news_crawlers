@@ -2,7 +2,6 @@ package newsCache
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 	"time"
 	"web_apps/news_crawlers/modules/database"
@@ -16,15 +15,15 @@ var (
 )
 
 // NewsIndexCache make an index news for fast access
-func NewsIndexCache(stop chan bool) {
+func NewsIndexCache() {
 	fmt.Println("starting news index cache...")
 
 	result, err := database.NewsIndexNewsIDS()
 	if err != nil {
 		return
 	}
-
 	pushIDredis(result...)
+	// stop <- 0
 }
 
 func pushIDredis(IDS ...database.NewsIds) {
@@ -37,13 +36,13 @@ func pushIDredis(IDS ...database.NewsIds) {
 	for _, item := range IDS {
 		strID = append(strID, item.ID.Hex())
 	}
-
-	sort.Sort(sort.Reverse(sort.StringSlice(strID)))
 	// DELETE existing
 	conn.Send("DEL", key)
 
-	for _, id := range strID {
-		conn.Send("RPUSHX", key, id)
+	reversedIDs := ReverseSlice(strID...)
+	for _, id := range reversedIDs {
+		fmt.Println(id)
+		conn.Send("LPUSH", key, id)
 	}
 	conn.Flush()
 	res, err := conn.Receive()
@@ -66,6 +65,15 @@ func DeleteKey(keys ...string) {
 			return
 		}
 	}
+}
+
+// ReverseSlice util to reverse slice
+func ReverseSlice(s ...string) []string {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
+	fmt.Println(s)
+	return s
 }
 
 // RedisKeyGen generate redis keys based on slice

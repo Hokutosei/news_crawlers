@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	getTimeout = time.Duration(5 * time.Second)
+	getTimeout = time.Duration(3 * time.Second)
 )
 
 type unMarshalledContent map[string]interface{}
