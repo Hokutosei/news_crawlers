@@ -2,6 +2,7 @@ package newsCache
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 	"web_apps/news_crawlers/modules/database"
@@ -37,11 +38,12 @@ func pushIDredis(IDS ...database.NewsIds) {
 		strID = append(strID, item.ID.Hex())
 	}
 
+	sort.Sort(sort.Reverse(sort.StringSlice(strID)))
 	// DELETE existing
 	conn.Send("DEL", key)
 
 	for _, id := range strID {
-		conn.Send("LPUSH", key, id)
+		conn.Send("RPUSH", key, id)
 	}
 	conn.Flush()
 	res, err := conn.Receive()
