@@ -130,6 +130,7 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 		Time:           int(time.Now().Unix()),
 		Url:            googleNews.URL,
 		ProviderName:   googleNewsName,
+		Publisher:      googleNews.Publisher,
 		RelatedStories: googleNews.RelatedStories,
 		CreatedAt:      fmt.Sprintf("%v", time.Now().Local()),
 		Category:       googleNews.Category,

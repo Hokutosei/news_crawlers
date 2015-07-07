@@ -12,6 +12,7 @@ type jsonNewsBody struct {
 	Url            string
 	ProviderName   string
 	ProviderUrl    string
+	Publisher      string
 	CreatedAt      string
 	RelatedStories []RelatedStories
 	Category       TopicIdentity

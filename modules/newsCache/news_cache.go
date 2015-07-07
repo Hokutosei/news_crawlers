@@ -41,7 +41,6 @@ func pushIDredis(IDS ...database.NewsIds) {
 
 	reversedIDs := ReverseSlice(strID...)
 	for _, id := range reversedIDs {
-		fmt.Println(id)
 		conn.Send("LPUSH", key, id)
 	}
 	conn.Flush()
