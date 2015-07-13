@@ -8,4 +8,4 @@ spec:
       image: gcr.io/chat-app-proto01/news_crawlers
       env:
         - name: COREOS_PRIVATE_IPV4
-          value: 130.211.255.234
+          value:
