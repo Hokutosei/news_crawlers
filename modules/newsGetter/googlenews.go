@@ -14,6 +14,7 @@ type GoogleNews map[string]interface{}
 
 // GoogleNewsResponseData response struct
 type GoogleNewsResponseData struct {
+	Category     TopicIdentity
 	ResponseData struct {
 		Results []GoogleNewsResults
 	}
@@ -52,7 +53,6 @@ func StartGoogleNews(googleLoopCounterDelay int) {
 
 	for t := range time.Tick(time.Duration(googleLoopCounterDelay) * time.Second) {
 		_ = t
-		fmt.Println(t)
 		fmt.Println("loop will start")
 
 		var wsg sync.WaitGroup
@@ -64,7 +64,7 @@ func StartGoogleNews(googleLoopCounterDelay int) {
 				go GoogleNewsRequester(googleURLConstructor(v.Initial), v, n, &wsg)
 
 				result := <-n
-				GoogleNewsRW(result, v, &wsg)
+				GoogleNewsRW(result, &wsg)
 			}(v)
 		}
 		wsg.Wait()
@@ -103,15 +103,18 @@ func GoogleNewsRequester(url string, topic TopicIdentity, c chan GoogleNewsRespo
 		wg.Done()
 		return
 	}
+
+	// explicitly set gn news category
+	googleNews.Category = topic
 	c <- googleNews
 }
 
 // GoogleNewsRW read and write data from google news
-func GoogleNewsRW(gn GoogleNewsResponseData, topic TopicIdentity, wg *sync.WaitGroup) {
+func GoogleNewsRW(gn GoogleNewsResponseData, wg *sync.WaitGroup) {
 	var wsg sync.WaitGroup
 	for _, g := range gn.ResponseData.Results {
 		// set news item category
-		g.Category = topic
+		g.Category = gn.Category
 		wsg.Add(1)
 		GoogleNewsDataSetter(g, &wsg)
 	}
@@ -133,8 +136,9 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 		Publisher:      googleNews.Publisher,
 		RelatedStories: googleNews.RelatedStories,
 		CreatedAt:      fmt.Sprintf("%v", time.Now().Local()),
-		Category:       googleNews.Category,
-		Image:          googleNews.Image,
+		// news refactoring of news Category from here
+		Category: googleNews.Category,
+		Image:    googleNews.Image,
 	}
 
 	// check if data exists already, need refactoring though
