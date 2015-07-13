@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"sync"
 
 	mongodb "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -15,7 +16,7 @@ var (
 )
 
 // GoogleNewsInsert insert data for google news
-func GoogleNewsInsert(hn GoogleNews, URL string) bool {
+func GoogleNewsInsert(hn GoogleNews, URL string, wg *sync.WaitGroup) bool {
 	sc := SessionCopy()
 	c := sc.DB(Db).C(googleNewsCollection)
 	defer sc.Close()
@@ -27,8 +28,10 @@ func GoogleNewsInsert(hn GoogleNews, URL string) bool {
 	_, err := c.Upsert(bson.M{"url": URL}, hn)
 	if err != nil {
 		fmt.Println(err)
+		wg.Done()
 		return false
 	}
+	wg.Done()
 	return true
 	//	fmt.Println("saved!")
 }
