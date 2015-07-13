@@ -15,16 +15,16 @@ var (
 )
 
 // GoogleNewsInsert insert data for google news
-func GoogleNewsInsert(hn GoogleNews, title string) bool {
+func GoogleNewsInsert(hn GoogleNews, URL string) bool {
 	sc := SessionCopy()
 	c := sc.DB(Db).C(googleNewsCollection)
 	defer sc.Close()
 
-	if !GoogleNewsFindIfExist(title, sc) {
-		return false
-	}
+	// if !GoogleNewsFindIfExist(URL, sc) {
+	// 	return false
+	// }
 
-	err := c.Insert(hn)
+	_, err := c.Upsert(bson.M{"url": URL}, hn)
 	if err != nil {
 		fmt.Println(err)
 		return false
@@ -34,12 +34,12 @@ func GoogleNewsInsert(hn GoogleNews, title string) bool {
 }
 
 // GoogleNewsFindIfExist check google news current data if exist before insert
-func GoogleNewsFindIfExist(title string, sc *mongodb.Session) bool {
+func GoogleNewsFindIfExist(URL string, sc *mongodb.Session) bool {
 	c := sc.DB(Db).C(googleNewsCollection)
 
 	var result map[string]interface{}
-	c.Find(bson.M{"title": title}).One(&result)
-	if result["title"] != nil {
+	c.Find(bson.M{"url": URL}).One(&result)
+	if result["url"] != nil && result["url"] != URL {
 		return false
 	}
 	return true

@@ -12,7 +12,7 @@ FROM ubuntu:wily
 
 MAINTAINER jeanepaul@gmail.com
 
-RUN apt-get update --fix-missing
+# RUN apt-get update --fix-missing
 RUN apt-get install -y ca-certificates
 
 COPY linux_news_crawlers /usr/bin/
