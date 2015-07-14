@@ -22,16 +22,18 @@ func NewsIndexCache() {
 	if err != nil {
 		return
 	}
-	pushIDredis(result...)
+
+	key := RedisKeyGen(newsIndexKeySlice...)
+	PushIDredis(key, result...)
 	// stop <- 0
 }
 
-func pushIDredis(IDS ...database.NewsIds) {
+// PushIDredis util to push bulk id to redis w/key
+func PushIDredis(key string, IDS ...database.NewsIds) {
 	start := time.Now()
 	conn := database.RedisPool.Get()
 	defer conn.Close()
 
-	key := RedisKeyGen(newsIndexKeySlice...)
 	var strID []string
 	for _, item := range IDS {
 		strID = append(strID, item.ID.Hex())

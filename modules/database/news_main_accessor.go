@@ -14,7 +14,7 @@ var (
 	// NewsMainCollection collection name
 	NewsMainCollection               = "news_main"
 	dayHours           time.Duration = 24
-	hoursPerDayQuery                 = dayHours * 1
+	hoursPerDayQuery                 = dayHours * 2
 )
 
 // NewsMainIndexNews responder for index news query

@@ -5,11 +5,11 @@ import (
 	"strconv"
 	"web_apps/news_crawlers/modules/config"
 	"web_apps/news_crawlers/modules/database"
-	"web_apps/news_crawlers/modules/newsGetter"
+	"web_apps/news_crawlers/modules/topRanking"
 )
 
 var (
-	loopDelay = 300
+	loopDelay = 15
 )
 
 // CalcLoopDlay get from ENV our loop delay
@@ -37,5 +37,6 @@ func main() {
 
 	// newsGetter.StartHackerNews(loopDelay)
 
-	newsGetter.StartGoogleNews(CalcLoopDlay())
+	// newsGetter.StartGoogleNews(CalcLoopDlay())
+	topRanking.GenerateTopRanking(loopDelay)
 }
