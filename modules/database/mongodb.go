@@ -21,6 +21,7 @@ var (
 
 // GetMongodbCluster retrieve mongodb cluster node from etcd
 func GetMongodbCluster(host chan string) {
+	fmt.Println("getting mongodb credentials...")
 	mongodbCluster, err := config.EtcdRawGetValue(mongodbClusterKey)
 	if err != nil {
 		panic(err)

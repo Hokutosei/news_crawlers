@@ -25,6 +25,7 @@ func CalcLoopDlay() int {
 
 // main entrypoint of the program
 func main() {
+	fmt.Println("starting!")
 	// strt getting analytics
 	// InitNewRelic()
 
@@ -34,7 +35,6 @@ func main() {
 	go database.MongodbStart()
 	go database.StartRedis()
 
-	fmt.Println("starting!")
 	// newsGetter.StartHackerNews(loopDelay)
 
 	newsGetter.StartGoogleNews(CalcLoopDlay())

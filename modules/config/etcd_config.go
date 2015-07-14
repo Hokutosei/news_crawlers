@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/coreos/go-etcd/etcd"
@@ -28,7 +27,7 @@ type EtcdResponse struct {
 
 // getOsMachinePrivateIP retrieve os machine private IP
 func getOsMachinePrivateIP() {
-	var envVar string = "127.0.0.1"
+	var envVar = "127.0.0.1"
 
 	osEnvStr := []string{"COREOS_PRIVATE_IPV4", "LOCALHOST_IP"}
 	for _, env := range osEnvStr {
@@ -47,19 +46,19 @@ func getOsMachinePrivateIP() {
 func StartEtcd() {
 	getOsMachinePrivateIP()
 
-	client := etcd.NewClient(machines)
-
-	if _, err := client.Set("/server_alive_w101", "alive", 0); err != nil {
-		log.Fatal(err)
-	}
-
-	val, _ := client.RawGet("/server_alive_w101", true, true)
-
-	var data EtcdResponse
-	if err := json.Unmarshal(val.Body, &data); err != nil {
-		fmt.Println(err)
-		return
-	}
+	// client := etcd.NewClient(machines)
+	//
+	// if _, err := client.Set("/server_alive_w101", "alive", 0); err != nil {
+	// 	log.Fatal(err)
+	// }
+	//
+	// val, _ := client.RawGet("/server_alive_w101", true, true)
+	//
+	// var data EtcdResponse
+	// if err := json.Unmarshal(val.Body, &data); err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
 }
 
 // EtcdRawGetValue get raw or unmarshalled value from etcd cluster

@@ -6,8 +6,11 @@ GOOS=linux GOARCH=amd64 go build -v -o linux_news_crawlers
 echo "--->> building container...."
 docker build -t jeanepaul/news_crawlers .
 
+# echo "--->> pushing container"
+# docker push jeanepaul/news_crawlers:latest
+
 echo "--->> pushing container"
-docker push jeanepaul/news_crawlers:latest
+gcloud docker push gcr.io/chat-app-proto01/news_crawlers
 
 echo "--->> stoping newscrawlers pod"
 kubectl stop pod newscrawlers
