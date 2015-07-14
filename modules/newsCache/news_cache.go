@@ -29,6 +29,7 @@ func NewsIndexCache() {
 }
 
 // PushIDredis util to push bulk id to redis w/key
+// TODO refactor this!
 func PushIDredis(key string, IDS ...database.NewsIds) {
 	start := time.Now()
 	conn := database.RedisPool.Get()
@@ -42,6 +43,29 @@ func PushIDredis(key string, IDS ...database.NewsIds) {
 	conn.Send("DEL", key)
 
 	reversedIDs := ReverseSlice(strID...)
+	for _, id := range reversedIDs {
+		conn.Send("LPUSH", key, id)
+	}
+	conn.Flush()
+	res, err := conn.Receive()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("push to cache index took: ", time.Since(start), "and redis: ", res)
+}
+
+// PushIDredisObjectID util to push bulk id to redis w/key
+// TODO refactor this!
+func PushIDredisObjectID(key string, IDs ...string) {
+	start := time.Now()
+	conn := database.RedisPool.Get()
+	defer conn.Close()
+
+	// DELETE existing
+	conn.Send("DEL", key)
+
+	reversedIDs := ReverseSlice(IDs...)
 	for _, id := range reversedIDs {
 		conn.Send("LPUSH", key, id)
 	}

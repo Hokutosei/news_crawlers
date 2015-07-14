@@ -20,7 +20,7 @@ type TopNewsRankerResult struct {
 }
 
 // TopNewsRanker main news top ranker
-func TopNewsRanker() {
+func TopNewsRanker() []string {
 	fmt.Println("topnewsranker handled!")
 	start := time.Now()
 
@@ -69,9 +69,7 @@ func TopNewsRanker() {
 	// pipe and execute the query
 	c.Pipe(query).All(&results)
 	fmt.Println("took: ", time.Since(start))
-	idSlice := ExtractIDsFromResult(results...)
-	fmt.Println(idSlice)
-	//PushIDredis
+	return ExtractIDsFromResult(results...)
 }
 
 // ExtractIDsFromResult utils from extracting IDS from result

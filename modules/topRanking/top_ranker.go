@@ -4,6 +4,11 @@ import (
 	"fmt"
 	"time"
 	"web_apps/news_crawlers/modules/database"
+	"web_apps/news_crawlers/modules/newsCache"
+)
+
+var (
+	todayTopRank = []string{"index", "news_top_rank"}
 )
 
 // GenerateTopRanking aggregate all news categories
@@ -13,6 +18,10 @@ func GenerateTopRanking(loopDelay int) {
 
 	for t := range time.Tick(time.Duration(loopDelay) * time.Second) {
 		fmt.Println(t)
-		database.TopNewsRanker()
+		idSlice := database.TopNewsRanker()
+
+		key := newsCache.RedisKeyGen(todayTopRank...)
+		newsCache.PushIDredisObjectID(key, idSlice...)
+
 	}
 }
