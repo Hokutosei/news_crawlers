@@ -44,7 +44,7 @@ func NewsMainIndexNews() (AggregatedNews, error) {
 
 // NewsIds struct for result IDS only
 type NewsIds struct {
-	ID bson.ObjectId "_id"
+	ID bson.ObjectId `bson:"_id"`
 }
 
 // NewsIndexNewsIDS retrieve all news index ids and save to cache
