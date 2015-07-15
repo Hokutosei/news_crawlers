@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	// main todayTopRank news key
 	todayTopRank = []string{"index", "news_top_rank"}
 )
 
@@ -22,6 +23,5 @@ func GenerateTopRanking(loopDelay int) {
 
 		key := newsCache.RedisKeyGen(todayTopRank...)
 		newsCache.PushIDredisObjectID(key, idSlice...)
-
 	}
 }
