@@ -19,7 +19,18 @@ func GenerateTopRanking(loopDelay int) {
 
 	for t := range time.Tick(time.Duration(loopDelay) * time.Second) {
 		fmt.Println(t)
-		idSlice := database.TopNewsRanker()
+		var idSlice []string
+		var daysAgo time.Duration = 1
+		var daysTo time.Duration
+
+		for len(idSlice) < 5 {
+			idSlice = database.TopNewsRanker(daysAgo, daysTo)
+			fmt.Println("len, ", len(idSlice))
+			fmt.Println(idSlice)
+			time.Sleep(time.Second * 5)
+			daysAgo++
+			daysTo++
+		}
 
 		key := newsCache.RedisKeyGen(todayTopRank...)
 		newsCache.PushIDredisObjectID(key, idSlice...)

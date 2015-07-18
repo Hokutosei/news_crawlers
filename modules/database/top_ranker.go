@@ -20,7 +20,7 @@ type TopNewsRankerResult struct {
 }
 
 // TopNewsRanker main news top ranker
-func TopNewsRanker() []string {
+func TopNewsRanker(from time.Duration, to time.Duration) []string {
 	fmt.Println("topnewsranker handled!")
 	start := time.Now()
 
@@ -28,43 +28,32 @@ func TopNewsRanker() []string {
 	c := sc.DB(Db).C(NewsMainCollection)
 	defer sc.Close()
 
-	gte := time.Now().Add(-time.Hour * hoursPerDayQuery)
-	lte := time.Now()
+	fromVal := dayHours * from
+	toVal := dayHours * to
+	gte := time.Now().Add(-time.Hour * fromVal)
+	lte := time.Now().Add(-time.Hour * toVal)
 	fmt.Println("query for this times gte: ", gte, " lte: ", lte)
 
-	// query := []bson.M{
-	// 	{"$match": bson.M{
-	// 		"created_at": bson.M{"$gte": gte, "$lte": lte},
-	// 	}},
-	// 	{"$group": bson.M{
-	// 		"_id": "$name",
-	// 		"sum": bson.M{"$sum": 1},
-	// 		"items": bson.M{
-	// 			"$push": bson.M{
-	// 				"temp":        "$main.temp",
-	// 				"created_at":  "$created_at",
-	// 				"description": "$weather"}},
-	// 	}},
-	// }
-	// db.news_main.aggregate([{$group:{_id:"$category.initial"}}])
-	// query for the meantime the latest of each group.
-	// add to query for higher views
 	var results []TopNewsRankerResult
 	query := []bson.M{
 		{"$match": bson.M{
-			"created_at":       bson.M{"$gte": gte, "$lte": lte},
-			"category.initial": bson.M{"$ne": " "},
-			"score":            bson.M{"$gte": 1},
+			"created_at": bson.M{"$gte": gte, "$lte": lte},
+			// "category.initial": bson.M{"$ne": " "},
+			// "score":            bson.M{"$gte": 1},
 		}},
 		{"$group": bson.M{
 			"_id": "$category.initial",
 			"sum": bson.M{"$sum": 1},
 			"items": bson.M{
 				"$push": bson.M{
-					"_id": "$_id",
+					"_id":   "$_id",
+					"score": "$score",
 				},
 			},
 		}},
+		// {"$sort": bson.M{
+		// 	"score": -1,
+		// }},
 	}
 
 	// pipe and execute the query

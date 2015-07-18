@@ -62,6 +62,10 @@ func PushIDredisObjectID(key string, IDs ...string) {
 	conn := database.RedisPool.Get()
 	defer conn.Close()
 
+	if len(IDs) == 0 {
+		return
+	}
+
 	// DELETE existing
 	conn.Send("DEL", key)
 
