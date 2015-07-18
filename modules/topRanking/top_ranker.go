@@ -23,11 +23,10 @@ func GenerateTopRanking(loopDelay int) {
 		var daysAgo time.Duration = 1
 		var daysTo time.Duration
 
+		// ensure we have enough idSlice len
 		for len(idSlice) < 5 {
-			idSlice = database.TopNewsRanker(daysAgo, daysTo)
-			fmt.Println("len, ", len(idSlice))
-			fmt.Println(idSlice)
 			time.Sleep(time.Second * 5)
+			idSlice = database.TopNewsRanker(daysAgo, daysTo)
 			daysAgo++
 			daysTo++
 		}
