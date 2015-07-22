@@ -115,6 +115,7 @@ func GoogleNewsRW(gn GoogleNewsResponseData, wg *sync.WaitGroup) {
 	for _, g := range gn.ResponseData.Results {
 		// set news item category
 		g.Category = gn.Category
+		g.SecondaryTitle = g.Title
 		wsg.Add(1)
 		fmt.Println("-------- category ", gn.Category.Name)
 		fmt.Println(g.Title)
@@ -130,6 +131,7 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	start := time.Now()
 	jsonNews := &jsonNewsBody{
 		Title:          googleNews.Title,
+		SecondaryTitle: googleNews.SecondaryTitle,
 		By:             "GoogleNews",
 		Score:          0,
 		Time:           int(time.Now().Unix()),
@@ -144,7 +146,7 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	}
 
 	// check if data exists already, need refactoring though
-	saved := database.GoogleNewsInsert(jsonNews, googleNews.URL, wg)
+	saved := database.GoogleNewsInsert(jsonNews, googleNews.Title, wg)
 
 	if saved {
 		end := time.Since(start)

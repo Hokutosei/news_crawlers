@@ -8,6 +8,7 @@ type jsonNewsBody struct {
 	Text           string
 	Time           int
 	Title          string
+	SecondaryTitle string `bson:"secondary_title" json:"secondary_title"`
 	Type           string
 	Url            string
 	ProviderName   string
@@ -84,6 +85,7 @@ type GoogleNewsResults struct {
 	RelatedStories    []RelatedStories `json:"relatedStories"`
 	SignedRedirectURL string           `json:"signedRedirectUrl"`
 	Title             string           `json:"title"`
+	SecondaryTitle    string           `bson:"secondary_title" json:"secondary_title"`
 	TitleNoFormatting string           `json:"titleNoFormatting"`
 	UnescapedURL      string           `json:"unescapedUrl"`
 	URL               string           `json:"url"`
