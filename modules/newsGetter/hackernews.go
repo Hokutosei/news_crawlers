@@ -63,7 +63,7 @@ func ContentOutPut(contentOutMsg jsonNewsBody, wg *sync.WaitGroup) {
 	defer wg.Done()
 	timeF := contentOutMsg.Time
 	contentOutMsg.Time = int(time.Now().Unix())
-	contentOutMsg.CreatedAt = fmt.Sprintf("%v", time.Now().Local())
+	contentOutMsg.CreatedAt = time.Now().Local()
 	contentOutMsg.ProviderUrl = hackerNewsProvider
 	contentOutMsg.ProviderName = hackerNewsName
 
