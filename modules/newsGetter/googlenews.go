@@ -139,7 +139,7 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 		ProviderName:   googleNewsName,
 		Publisher:      googleNews.Publisher,
 		RelatedStories: googleNews.RelatedStories,
-		CreatedAt:      fmt.Sprintf("%v", time.Now().Local()),
+		CreatedAt:      time.Now().Local(),
 		// news refactoring of news Category from here
 		Category: googleNews.Category,
 		Image:    googleNews.Image,

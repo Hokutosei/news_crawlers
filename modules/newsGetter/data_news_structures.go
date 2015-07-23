@@ -1,5 +1,7 @@
 package newsGetter
 
+import "time"
+
 type jsonNewsBody struct {
 	By string
 	Id int
@@ -14,7 +16,7 @@ type jsonNewsBody struct {
 	ProviderName   string
 	ProviderUrl    string
 	Publisher      string
-	CreatedAt      string
+	CreatedAt      time.Time `bson:"created_at" json:"createdat"`
 	RelatedStories []RelatedStories
 	Category       TopicIdentity
 	Image          interface{}

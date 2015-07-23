@@ -6,6 +6,7 @@ import (
 	"web_apps/news_crawlers/modules/config"
 	"web_apps/news_crawlers/modules/database"
 	"web_apps/news_crawlers/modules/newsGetter"
+	"web_apps/news_crawlers/modules/topRanking"
 )
 
 var (
@@ -36,6 +37,6 @@ func main() {
 	go database.StartRedis()
 
 	// newsGetter.StartHackerNews(loopDelay)
-
+	go topRanking.GenerateTopRanking(CalcLoopDlay())
 	newsGetter.StartGoogleNews(CalcLoopDlay())
 }
