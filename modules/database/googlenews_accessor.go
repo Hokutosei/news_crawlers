@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 
+	"web_apps/news_crawlers/modules/utils"
+
 	mongodb "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -42,10 +44,14 @@ func GoogleNewsFindIfExist(title string, sc *mongodb.Session) bool {
 	c := sc.DB(Db).C(googleNewsCollection)
 
 	var result map[string]interface{}
-	c.Find(bson.M{"title": title}).One(&result)
-	if result["secondary_title"] != nil && result["secondary_title"] != title {
+	encodedTitle := utils.ToUtf8(title)
+	c.Find(bson.M{"encoded_title": encodedTitle}).One(&result)
+	if result["encoded_title"] == encodedTitle {
 		return false
 	}
+	// if result["secondary_title"] != nil && result["secondary_title"] != title {
+	// 	return false
+	// }
 	return true
 }
 

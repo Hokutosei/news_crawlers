@@ -11,6 +11,7 @@ type jsonNewsBody struct {
 	Time           int
 	Title          string
 	SecondaryTitle string `bson:"secondary_title" json:"secondary_title"`
+	EncodedTitle   string `bson:"encoded_title" json:"encoded_title"`
 	Type           string
 	Url            string
 	ProviderName   string

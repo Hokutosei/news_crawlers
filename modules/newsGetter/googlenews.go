@@ -7,6 +7,7 @@ import (
 	"time"
 	"web_apps/news_crawlers/modules/database"
 	"web_apps/news_crawlers/modules/newsCache"
+	"web_apps/news_crawlers/modules/utils"
 )
 
 // GoogleNews interface for google news
@@ -117,8 +118,8 @@ func GoogleNewsRW(gn GoogleNewsResponseData, wg *sync.WaitGroup) {
 		g.Category = gn.Category
 		g.SecondaryTitle = g.Title
 		wsg.Add(1)
-		fmt.Println("-------- category ", gn.Category.Name)
-		fmt.Println(g.Title)
+		// fmt.Println("-------- category ", gn.Category.Name)
+		// fmt.Println(g.Title)
 		GoogleNewsDataSetter(g, &wsg)
 	}
 	wsg.Wait()
@@ -132,6 +133,7 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	jsonNews := &jsonNewsBody{
 		Title:          googleNews.Title,
 		SecondaryTitle: googleNews.SecondaryTitle,
+		EncodedTitle:   utils.ToUtf8(googleNews.Title),
 		By:             "GoogleNews",
 		Score:          0,
 		Time:           int(time.Now().Unix()),
