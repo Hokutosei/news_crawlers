@@ -29,6 +29,9 @@ func GenerateTopRanking(loopDelay int) {
 			idSlice = database.TopNewsRanker(daysAgo, daysTo)
 			daysAgo++
 			daysTo++
+			if daysAgo >= 5 {
+				panic("retried so much")
+			}
 		}
 
 		key := newsCache.RedisKeyGen(todayTopRank...)

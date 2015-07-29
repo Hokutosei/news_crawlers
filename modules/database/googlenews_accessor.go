@@ -18,12 +18,12 @@ var (
 )
 
 // GoogleNewsInsert insert data for google news
-func GoogleNewsInsert(hn GoogleNews, title string, wg *sync.WaitGroup) bool {
+func GoogleNewsInsert(hn GoogleNews, title string, imgURL string, wg *sync.WaitGroup) bool {
 	sc := SessionCopy()
 	c := sc.DB(Db).C(googleNewsCollection)
 	defer sc.Close()
 
-	if !GoogleNewsFindIfExist(title, sc) {
+	if !GoogleNewsFindIfExist(title, imgURL, sc) {
 		wg.Done()
 		return false
 	}
@@ -40,13 +40,13 @@ func GoogleNewsInsert(hn GoogleNews, title string, wg *sync.WaitGroup) bool {
 }
 
 // GoogleNewsFindIfExist check google news current data if exist before insert
-func GoogleNewsFindIfExist(title string, sc *mongodb.Session) bool {
+func GoogleNewsFindIfExist(title string, imgURL string, sc *mongodb.Session) bool {
 	c := sc.DB(Db).C(googleNewsCollection)
 
 	var result map[string]interface{}
 	encodedTitle := utils.ToUtf8(title)
 	c.Find(bson.M{"encoded_title": encodedTitle}).One(&result)
-	if result["encoded_title"] == encodedTitle {
+	if result["encoded_title"] == encodedTitle || result["image_url"] != imgURL {
 		return false
 	}
 	// if result["secondary_title"] != nil && result["secondary_title"] != title {

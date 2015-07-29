@@ -138,6 +138,7 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 		Score:          0,
 		Time:           int(time.Now().Unix()),
 		Url:            googleNews.URL,
+		ImageUrl:       googleNews.Image.URL,
 		ProviderName:   googleNewsName,
 		Publisher:      googleNews.Publisher,
 		RelatedStories: googleNews.RelatedStories,
@@ -148,7 +149,7 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	}
 
 	// check if data exists already, need refactoring though
-	saved := database.GoogleNewsInsert(jsonNews, googleNews.Title, wg)
+	saved := database.GoogleNewsInsert(jsonNews, googleNews.Title, googleNews.Image.URL, wg)
 
 	if saved {
 		end := time.Since(start)
