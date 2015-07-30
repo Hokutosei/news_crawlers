@@ -38,5 +38,6 @@ func main() {
 
 	// newsGetter.StartHackerNews(loopDelay)
 	go topRanking.GenerateTopRanking(CalcLoopDlay())
+	go topRanking.Headlines(350)
 	newsGetter.StartGoogleNews(CalcLoopDlay())
 }
