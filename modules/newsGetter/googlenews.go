@@ -138,7 +138,7 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 		Score:          0,
 		Time:           int(time.Now().Unix()),
 		Url:            googleNews.URL,
-		ImageUrl:       googleNews.Image.URL,
+		ImageURL:       googleNews.Image.URL,
 		ProviderName:   googleNewsName,
 		Publisher:      googleNews.Publisher,
 		RelatedStories: googleNews.RelatedStories,
