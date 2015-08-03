@@ -10,11 +10,13 @@ import (
 var (
 	headLines                     = []string{"weekly", "headlines"}
 	daysAgoDuration time.Duration = 7
-	daysAgoRetries  time.Duration = 10
+	daysAgoRetries  time.Duration = 2
 )
 
 // Headlines get the most viewed/like news
 func Headlines(loopDelay int) {
+	fmt.Println("headline crawler started!")
+
 	for t := range time.Tick(time.Duration(loopDelay) * time.Second) {
 		fmt.Println(t)
 		var idSlice []string
@@ -29,7 +31,7 @@ func Headlines(loopDelay int) {
 			daysAgo++
 			daysTo++
 			if daysAgo >= daysAgoRetries {
-				panic("retried so much")
+				fmt.Println("retried so much headlines!")
 			}
 		}
 

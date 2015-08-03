@@ -30,7 +30,7 @@ func GenerateTopRanking(loopDelay int) {
 			daysAgo++
 			daysTo++
 			if daysAgo >= 5 {
-				panic("retried so much")
+				fmt.Println("retried so much top ranking")
 			}
 		}
 

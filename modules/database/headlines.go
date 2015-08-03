@@ -19,7 +19,7 @@ type HeadlineNewsStruct struct {
 
 // Headlines index top headline news
 func Headlines(from time.Duration, to time.Duration) []string {
-	fmt.Println("topnewsranker handled!")
+	fmt.Println("headline crawler handled!")
 	start := time.Now()
 
 	sc := SessionCopy()
@@ -39,7 +39,7 @@ func Headlines(from time.Duration, to time.Duration) []string {
 			"created_at":     bson.M{"$gte": gte, "$lte": lte},
 			"image.url":      bson.M{"$ne": ""},
 			"image.tbheight": bson.M{"$gte": 50},
-			"score":          bson.M{"$gte": 2},
+			"score":          bson.M{"$gte": 1},
 		}},
 		{"$group": bson.M{
 			"_id": "$category.initial",
