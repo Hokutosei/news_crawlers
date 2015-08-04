@@ -46,7 +46,7 @@ func GoogleNewsFindIfExist(title string, imgURL string, sc *mongodb.Session) boo
 	var result map[string]interface{}
 	encodedTitle := utils.ToUtf8(title)
 	c.Find(bson.M{"encoded_title": encodedTitle}).One(&result)
-	if result["encoded_title"] == encodedTitle || result["image_url"] == imgURL {
+	if result["url"] == imgURL || result["encoded_title"] == encodedTitle {
 		return false
 	}
 	return true

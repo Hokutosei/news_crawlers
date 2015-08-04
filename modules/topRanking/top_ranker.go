@@ -31,6 +31,7 @@ func GenerateTopRanking(loopDelay int) {
 			daysTo++
 			if daysAgo >= 5 {
 				fmt.Println("retried so much top ranking")
+				break
 			}
 		}
 

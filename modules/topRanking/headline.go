@@ -32,6 +32,7 @@ func Headlines(loopDelay int) {
 			daysTo++
 			if daysAgo >= daysAgoRetries {
 				fmt.Println("retried so much headlines!")
+				break
 			}
 		}
 
