@@ -36,6 +36,10 @@ func Headlines(loopDelay int) {
 			}
 		}
 
+		if len(idSlice) < 5 {
+			return
+		}
+
 		key := newsCache.RedisKeyGen(headLines...)
 		newsCache.PushIDredisObjectID(key, idSlice...)
 	}

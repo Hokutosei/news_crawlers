@@ -35,6 +35,10 @@ func GenerateTopRanking(loopDelay int) {
 			}
 		}
 
+		if len(idSlice) < 5 {
+			return
+		}
+
 		key := newsCache.RedisKeyGen(todayTopRank...)
 		newsCache.PushIDredisObjectID(key, idSlice...)
 	}
