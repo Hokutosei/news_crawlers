@@ -3,7 +3,6 @@ package database
 import (
 	"fmt"
 	"sync"
-
 	"web_apps/news_crawlers/modules/utils"
 
 	mongodb "gopkg.in/mgo.v2"
@@ -46,11 +45,22 @@ func GoogleNewsFindIfExist(title string, imgURL string, sc *mongodb.Session) boo
 	var result map[string]interface{}
 	encodedTitle := utils.ToUtf8(title)
 	c.Find(bson.M{"encoded_title": encodedTitle}).One(&result)
+	// c.Find(bson.M{"image_url": imgURL}).One(&result)
+
+	// debug
+	fmt.Println(imgURL)
+	fmt.Println(result["image_url"])
+	fmt.Println(title)
+	fmt.Println(result["title"])
+	fmt.Println("-----------------------------------------")
 
 	// validate if any record found
-	if len(result) != 0 {
+	if title == result["title"] ||
+		len(result) != 0 ||
+		imgURL == result["image_url"] {
 		return false
 	}
+
 	return true
 }
 
