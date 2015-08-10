@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 	"web_apps/news_crawlers/modules/database"
+	"web_apps/news_crawlers/modules/utils"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -16,6 +17,7 @@ var (
 
 // NewsIndexCache make an index news for fast access
 func NewsIndexCache() {
+	start := time.Now()
 	fmt.Println("starting news index cache...")
 
 	result, err := database.NewsIndexNewsIDS()
@@ -25,6 +27,7 @@ func NewsIndexCache() {
 
 	key := RedisKeyGen(newsIndexKeySlice...)
 	PushIDredis(key, result...)
+	utils.Info(fmt.Sprintf("news index cache took: %v", time.Since(start)))
 	// stop <- 0
 }
 
