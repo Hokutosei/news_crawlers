@@ -5,7 +5,8 @@ import (
 
 	mongodb "gopkg.in/mgo.v2"
 
-	"web_apps/news_crawlers/modules/config"
+	_ "web_apps/news_crawlers/modules/config"
+	"web_apps/news_crawlers/modules/utils"
 )
 
 var (
@@ -22,12 +23,12 @@ var (
 // GetMongodbCluster retrieve mongodb cluster node from etcd
 func GetMongodbCluster(host chan string) {
 	fmt.Println("getting mongodb credentials...")
-	mongodbCluster, err := config.EtcdRawGetValue(mongodbClusterKey)
-	if err != nil {
-		panic(err)
-	}
+	// mongodbCluster, err := config.EtcdRawGetValue(mongodbClusterKey)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	host <- mongodbCluster
+	host <- "mongos1-router:27020"
 }
 
 // MongodbStart start connecting to mongodb
@@ -39,6 +40,8 @@ func MongodbStart() {
 
 	host := <-mongodbCluster
 	connectionStr := fmt.Sprintf("mongodb://%v/?maxPoolSize=10", host)
+	utils.Info(fmt.Sprintf("%s", connectionStr))
+	utils.Info(fmt.Sprintf("debug--------"))
 
 	session, err := mongodb.Dial(connectionStr)
 	if err != nil {

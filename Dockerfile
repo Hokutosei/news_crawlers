@@ -19,4 +19,6 @@ COPY linux_news_crawlers /usr/bin/
 
 WORKDIR /usr/bin
 
+RUN env
+
 ENTRYPOINT ./linux_news_crawlers

@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"time"
-	"web_apps/news_crawlers/modules/config"
+	_ "web_apps/news_crawlers/modules/config"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -54,10 +54,10 @@ func NewPool(server string) *redis.Pool {
 
 // GetRedisHost get redis host from etcd
 func GetRedisHost(host chan string) {
-	redisHost, err := config.EtcdRawGetValue(redisHostKey)
-	if err != nil {
-		panic(err)
-	}
+	// redisHost, err := config.EtcdRawGetValue(redisHostKey)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	host <- redisHost
+	host <- "130.211.255.234:6379"
 }
