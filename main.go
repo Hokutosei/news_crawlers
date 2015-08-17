@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	loopDelay = 60
+	loopDelay = 350
 )
 
 // CalcLoopDlay get from ENV our loop delay
