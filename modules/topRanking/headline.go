@@ -14,7 +14,7 @@ var (
 )
 
 // Headlines get the most viewed/like news
-func Headlines(loopDelay int) {
+func Headlines(loopDelay, loopRetry int) {
 	fmt.Println("headline crawler started!")
 
 	for t := range time.Tick(time.Duration(loopDelay) * time.Second) {
@@ -25,7 +25,7 @@ func Headlines(loopDelay int) {
 		// searching := false
 
 		// ensure we have enough idSlice len
-		for len(idSlice) < 5 {
+		for len(idSlice) < loopRetry {
 			time.Sleep(time.Second * 5)
 			idSlice = database.Headlines(daysAgo, daysTo)
 			daysAgo++

@@ -11,6 +11,7 @@ import (
 
 var (
 	loopDelay = 350
+	loopRetry = 10
 )
 
 // CalcLoopDlay get from ENV our loop delay
@@ -38,6 +39,6 @@ func main() {
 
 	// newsGetter.StartHackerNews(loopDelay)
 	go topRanking.GenerateTopRanking(CalcLoopDlay())
-	go topRanking.Headlines(350)
+	go topRanking.Headlines(350, loopRetry)
 	newsGetter.StartGoogleNews(CalcLoopDlay())
 }
