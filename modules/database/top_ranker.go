@@ -39,7 +39,7 @@ func TopNewsRanker(from time.Duration, to time.Duration) []string {
 		{"$match": bson.M{
 			"created_at": bson.M{"$gte": gte, "$lte": lte},
 			// "category.initial": bson.M{"$ne": " "},
-			// "score":            bson.M{"$gte": 1},
+			"score": bson.M{"$gte": 1},
 		}},
 		{"$group": bson.M{
 			"_id": "$category.initial",
