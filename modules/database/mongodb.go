@@ -17,6 +17,8 @@ var (
 
 	//mongodbClusterKey etcd key name
 	mongodbClusterKey = "mongodb_cluster1"
+
+	searchLimitItems = 70
 )
 
 // GetMongodbCluster retrieve mongodb cluster node from etcd

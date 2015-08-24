@@ -16,7 +16,6 @@ type AggregatedNews []interface{}
 
 var (
 	hackerNewsCollection = "news_main"
-	searchLimitItems     = 50
 )
 
 // HackerNewsInsert insert data to mongodb

@@ -6,12 +6,15 @@ import (
 	"web_apps/news_crawlers/modules/config"
 	"web_apps/news_crawlers/modules/database"
 	"web_apps/news_crawlers/modules/newsGetter"
+	"web_apps/news_crawlers/modules/seed"
 	"web_apps/news_crawlers/modules/topRanking"
 )
 
 var (
 	loopDelay = 350
 	loopRetry = 10
+
+	oneHour = 3600
 )
 
 // CalcLoopDlay get from ENV our loop delay
@@ -38,7 +41,9 @@ func main() {
 	go database.StartRedis()
 
 	// newsGetter.StartHackerNews(loopDelay)
-	go topRanking.GenerateTopRanking(CalcLoopDlay())
+	go topRanking.GenerateTopRanking(oneHour)
 	go topRanking.Headlines(350, loopRetry)
+
+	go seed.SuggestRand(30, 5)
 	newsGetter.StartGoogleNews(CalcLoopDlay())
 }
