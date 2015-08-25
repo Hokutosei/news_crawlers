@@ -38,18 +38,17 @@ func SuggestRand(from time.Duration, to time.Duration) []string {
 
 	// improve this count, kinda buggy
 	collectionCount, err := c.Count()
+	fmt.Println(collectionCount)
 	if err != nil {
 		fmt.Println(err)
 		collectionCount = 2000
 	}
 	for i := 0; i < 10; i++ {
 		var s SuggestedRandItems
-		c.Find(nil).Sort("-_id").Limit(1).Skip(randomSkip(0, collectionCount)).One(&s)
+		c.Find(bson.M{}).Sort("-_id").Skip(randomSkip(0, collectionCount)).One(&s)
+		fmt.Println(s)
 		results = append(results, s)
 	}
-
-	utils.Info(fmt.Sprintf("result suggest rand"))
-	fmt.Println(results)
 
 	// pipe and execute the query
 	// c.Pipe(query).All(&results)
@@ -64,6 +63,7 @@ func SuggestRand(from time.Duration, to time.Duration) []string {
 			extractIDs = append(extractIDs, id["_id"].Hex())
 		}
 	}
+	fmt.Println(extractIDs)
 	return extractIDs
 }
 
