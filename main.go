@@ -34,7 +34,7 @@ func main() {
 	// strt getting analytics
 	// InitNewRelic()
 
-	config.StartEtcd()
+	// config.StartEtcd()
 
 	// connect to mongodb
 	go database.MongodbStart()
