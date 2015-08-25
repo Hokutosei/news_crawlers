@@ -14,9 +14,7 @@ var ()
 // SuggestedRandItems struct holder
 // { "_id" : null, "total" : 326554 }
 type SuggestedRandItems struct {
-	ID    string `bson:"_id"`
-	Total int
-	Items []map[string]bson.ObjectId
+	ID bson.ObjectId `bson:"_id"`
 }
 
 // SuggestRand query suggestion random news items
@@ -45,8 +43,10 @@ func SuggestRand(from time.Duration, to time.Duration) []string {
 	}
 	for i := 0; i < 10; i++ {
 		var s SuggestedRandItems
-		c.Find(bson.M{}).Sort("-_id").Skip(randomSkip(0, collectionCount)).One(&s)
+		skipVal := randomSkip(0, collectionCount)
+		c.Find(bson.M{}).Sort("-_id").Skip(skipVal).One(&s)
 		fmt.Println(s)
+		time.Sleep(200 * time.Millisecond)
 		results = append(results, s)
 	}
 
@@ -55,13 +55,8 @@ func SuggestRand(from time.Duration, to time.Duration) []string {
 	fmt.Println("took: ", time.Since(start))
 
 	var extractIDs []string
-	for _, i := range results {
-		for iter, id := range i.Items {
-			if iter >= groupLimit {
-				break
-			}
-			extractIDs = append(extractIDs, id["_id"].Hex())
-		}
+	for _, item := range results {
+		extractIDs = append(extractIDs, item.ID.Hex())
 	}
 	fmt.Println(extractIDs)
 	return extractIDs
