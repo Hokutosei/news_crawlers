@@ -13,13 +13,13 @@ var (
 )
 
 // SuggestRand suggest random items
-func SuggestRand(loopDelay, retry int) {
+func SuggestRand(daysFrom time.Duration, loopDelay, retry int) {
 	utils.Info(fmt.Sprintf("suggest random start"))
 
 	for t := range time.Tick(time.Duration(loopDelay) * time.Second) {
 		fmt.Println(t)
 		var idSlice []string
-		var daysAgo time.Duration = 1
+		var daysAgo time.Duration = daysFrom
 		var daysTo time.Duration
 
 		// ensure we have enough idSlice len

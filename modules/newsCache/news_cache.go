@@ -55,7 +55,7 @@ func PushIDredis(key string, IDS ...database.NewsIds) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("push to cache index took: ", time.Since(start), "and redis: ", res)
+	utils.Info(fmt.Sprintf("key: %v ; push to cache index took: %v and redis: %v", key, time.Since(start), res))
 }
 
 // PushIDredisObjectID util to push bulk id to redis w/key
@@ -82,7 +82,8 @@ func PushIDredisObjectID(key string, IDs ...string) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("push to cache index took: ", time.Since(start), "and redis: ", res)
+	// fmt.Println("push to cache index took: ", time.Since(start), "and redis: ", res)
+	utils.Info(fmt.Sprintf("key: [%v] ; push to cache index took: %v and redis: %v", key, time.Since(start), res))
 }
 
 // DeleteKey remove keys from redis
