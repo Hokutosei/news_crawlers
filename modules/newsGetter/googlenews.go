@@ -143,9 +143,10 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 		Publisher:      googleNews.Publisher,
 		RelatedStories: googleNews.RelatedStories,
 		CreatedAt:      time.Now().Local(),
-		// news refactoring of news Category from here
-		Category: googleNews.Category,
-		Image:    googleNews.Image,
+		Category:       googleNews.Category,
+		Image:          googleNews.Image,
+		Content:        googleNews.Content,
+		Language:       googleNews.Language,
 	}
 
 	// check if data exists already, need refactoring though

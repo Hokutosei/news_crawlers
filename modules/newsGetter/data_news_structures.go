@@ -3,9 +3,8 @@ package newsGetter
 import "time"
 
 type jsonNewsBody struct {
-	By string
-	Id int
-	//Kids 			[]int
+	By             string
+	Id             int
 	Score          int
 	Text           string
 	Time           int
@@ -23,6 +22,8 @@ type jsonNewsBody struct {
 	Image          interface{}
 	ImageURL       string `bson:"image_url" json:"image_url"`
 	NewsPageView   int    `bson:"news_page_view"`
+	Content        string
+	Language       string
 }
 
 // Topics topics list map holder
