@@ -129,6 +129,10 @@ func GoogleNewsRW(gn GoogleNewsResponseData, wg *sync.WaitGroup) {
 // GoogleNewsDataSetter builds and construct data for insertion
 func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	// defer wg.Done()
+	// main data struct for NEWS
+	fmt.Println("Content")
+	fmt.Println("debug ------")
+	fmt.Println(googleNews.Content)
 	start := time.Now()
 	jsonNews := &jsonNewsBody{
 		Title:          googleNews.Title,
