@@ -35,7 +35,7 @@ func GetMongodbCluster(host chan string) {
 
 // MongodbStart start connecting to mongodb
 func MongodbStart() {
-	fmt.Println("starting mongodb..")
+	utils.Info(fmt.Sprintf("starting mongodb.."))
 
 	mongodbCluster := make(chan string)
 	go GetMongodbCluster(mongodbCluster)
@@ -50,7 +50,8 @@ func MongodbStart() {
 		// fmt.Println(err)
 		panic(err)
 	}
-	fmt.Println("connected to mongodb...")
+
+	utils.Info(fmt.Sprintf("connected to mongodb..."))
 	MongodbSession = session
 	// MongodbSession.SetMode(mongodb.Eventual, true)
 }

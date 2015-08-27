@@ -43,26 +43,33 @@ func TopicsList() Topics {
 		"technology":    TopicIdentity{"t", "テクノロジー"},
 		"pickup":        TopicIdentity{"ir", "ピックアップ"},
 	}
-
 	return topics
+}
+
+// GetterLanguages language for news getters
+func GetterLanguages() []string {
+	//ned=en_ph
+	return []string{"en", "en_ph", "jp"}
 }
 
 // StartGoogleNews start collecting google news
 func StartGoogleNews(googleLoopCounterDelay int) {
-	fmt.Println("startgoogle news launched!")
+	utils.Info(fmt.Sprintf("startgoogle news launched!"))
 	fmt.Println(googleLoopCounterDelay)
 
 	for t := range time.Tick(time.Duration(googleLoopCounterDelay) * time.Second) {
 		_ = t
-		fmt.Println("loop will start")
+		utils.Info(fmt.Sprintf("google news loop start"))
 
 		var wsg sync.WaitGroup
 		n := make(chan GoogleNewsResponseData)
 		// cs := make(chan int)
 		for _, v := range TopicsList() {
-			wsg.Add(1)
 			go func(v TopicIdentity) {
-				go GoogleNewsRequester(googleURLConstructor(v.Initial), v, n, &wsg)
+				wsg.Add(1)
+				for _, lang := range GetterLanguages() {
+					GoogleNewsRequester(googleURLConstructor(v.Initial, lang), v, n, &wsg)
+				}
 
 				result := <-n
 				GoogleNewsRW(result, &wsg)
@@ -118,8 +125,6 @@ func GoogleNewsRW(gn GoogleNewsResponseData, wg *sync.WaitGroup) {
 		g.Category = gn.Category
 		g.SecondaryTitle = g.Title
 		wsg.Add(1)
-		// fmt.Println("-------- category ", gn.Category.Name)
-		// fmt.Println(g.Title)
 		GoogleNewsDataSetter(g, &wsg)
 	}
 	wsg.Wait()
@@ -128,11 +133,8 @@ func GoogleNewsRW(gn GoogleNewsResponseData, wg *sync.WaitGroup) {
 
 // GoogleNewsDataSetter builds and construct data for insertion
 func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
-	// defer wg.Done()
+
 	// main data struct for NEWS
-	fmt.Println("Content")
-	fmt.Println("debug ------")
-	fmt.Println(googleNews.Content)
 	start := time.Now()
 	jsonNews := &jsonNewsBody{
 		Title:          googleNews.Title,
@@ -159,7 +161,6 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	if saved {
 		end := time.Since(start)
 		fmt.Println("saved!! google news! took: ", end)
-		// wg.Done()
 		return
 	}
 
@@ -168,8 +169,9 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 }
 
 //googleUrlConstructor return url string
-func googleURLConstructor(v string) string {
+func googleURLConstructor(v, lang string) string {
 	// https://ajax.googleapis.com/ajax/services/search/news?v=1.0&topic=t&ned=jp&userip=127.0.0.1
-	url := fmt.Sprintf("https://ajax.googleapis.com/ajax/services/search/news?v=1.0&topic=%s&ned=jp&userip=127.0.0.2", v)
+	// url := fmt.Sprintf("https://ajax.googleapis.com/ajax/services/search/news?v=1.0&topic=%s&ned=jp&userip=127.0.0.2", v)
+	url := fmt.Sprintf("https://ajax.googleapis.com/ajax/services/search/news?v=1.0&topic=%s&ned=%v&userip=127.0.0.2", v, lang)
 	return url
 }

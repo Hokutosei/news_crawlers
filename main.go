@@ -45,5 +45,7 @@ func main() {
 	go topRanking.Headlines(350, loopRetry)
 
 	go seed.SuggestRand(3, oneHour, 10)
-	newsGetter.StartGoogleNews(CalcLoopDlay())
+
+	// main getter
+	newsGetter.StartGoogleNews(30)
 }

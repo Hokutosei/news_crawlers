@@ -6,6 +6,8 @@ import (
 	"time"
 	_ "web_apps/news_crawlers/modules/config"
 
+	"web_apps/news_crawlers/modules/utils"
+
 	"github.com/garyburd/redigo/redis"
 )
 
@@ -20,13 +22,13 @@ var (
 
 // StartRedis start connecting to redis
 func StartRedis() {
-	fmt.Println("starting redis..")
+	utils.Info(fmt.Sprintf("starting redis.."))
 	redisHost := make(chan string)
 	go GetRedisHost(redisHost)
 
 	s := <-redisHost
 	RedisPool = NewPool(s)
-	fmt.Println("connected to redis..")
+	utils.Info(fmt.Sprintf("connected to redis.."))
 }
 
 // NewPool create redis pool servers
