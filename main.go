@@ -47,5 +47,5 @@ func main() {
 	go seed.SuggestRand(3, oneHour, 10)
 
 	// main getter
-	newsGetter.StartGoogleNews(30)
+	newsGetter.StartGoogleNews(CalcLoopDlay())
 }

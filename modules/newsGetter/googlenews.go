@@ -59,20 +59,24 @@ func StartGoogleNews(googleLoopCounterDelay int) {
 
 	for t := range time.Tick(time.Duration(googleLoopCounterDelay) * time.Second) {
 		_ = t
+		start := time.Now()
 		utils.Info(fmt.Sprintf("google news loop start"))
 
 		var wsg sync.WaitGroup
 		n := make(chan GoogleNewsResponseData)
-		// cs := make(chan int)
-		for _, v := range TopicsList() {
-			go func(v TopicIdentity) {
-				wsg.Add(1)
-				for _, lang := range GetterLanguages() {
-					GoogleNewsRequester(googleURLConstructor(v.Initial, lang), v, n, &wsg)
-				}
+		languages := GetterLanguages()
 
-				result := <-n
-				GoogleNewsRW(result, &wsg)
+		for _, v := range TopicsList() {
+			wsg.Add(len(languages))
+			go func(v TopicIdentity) {
+				for _, lang := range languages {
+					result, err := GoogleNewsGetter(googleURLConstructor(v.Initial, lang), v)
+					if err != nil {
+						wsg.Done()
+						continue
+					}
+					GoogleNewsRW(result, &wsg, lang)
+				}
 			}(v)
 		}
 		wsg.Wait()
@@ -80,7 +84,34 @@ func StartGoogleNews(googleLoopCounterDelay int) {
 
 		// cache index news keys
 		newsCache.NewsIndexCache()
+		utils.Info(fmt.Sprintf("Google news took: %v", time.Since(start)))
 	}
+}
+
+// GoogleNewsGetter request google api
+func GoogleNewsGetter(url string, topic TopicIdentity) (GoogleNewsResponseData, error) {
+	var googleNews GoogleNewsResponseData
+	response, err := httpGet(url)
+	if err != nil {
+		utils.Info(fmt.Sprintf("error in google news get %v", err))
+		return googleNews, err
+	}
+	defer response.Body.Close()
+
+	contents, err := responseReader(response)
+	if err != nil {
+		utils.Info(fmt.Sprintf("error in response reader %v", err))
+		return googleNews, err
+	}
+
+	err = json.Unmarshal(contents, &googleNews)
+	if err != nil {
+		utils.Info(fmt.Sprintf("error in unmarshal %v", err))
+		return googleNews, err
+	}
+
+	googleNews.Category = topic
+	return googleNews, nil
 }
 
 // GoogleNewsRequester google news http getter
@@ -118,21 +149,19 @@ func GoogleNewsRequester(url string, topic TopicIdentity, c chan GoogleNewsRespo
 }
 
 // GoogleNewsRW read and write data from google news
-func GoogleNewsRW(gn GoogleNewsResponseData, wg *sync.WaitGroup) {
-	var wsg sync.WaitGroup
+func GoogleNewsRW(gn GoogleNewsResponseData, wg *sync.WaitGroup, lang string) {
 	for _, g := range gn.ResponseData.Results {
 		// set news item category
 		g.Category = gn.Category
 		g.SecondaryTitle = g.Title
-		wsg.Add(1)
-		GoogleNewsDataSetter(g, &wsg)
+		g.Language = lang
+		GoogleNewsDataSetter(g)
 	}
-	wsg.Wait()
-	wg.Done()
+	defer wg.Done()
 }
 
 // GoogleNewsDataSetter builds and construct data for insertion
-func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
+func GoogleNewsDataSetter(googleNews GoogleNewsResults) {
 
 	// main data struct for NEWS
 	start := time.Now()
@@ -156,7 +185,7 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 	}
 
 	// check if data exists already, need refactoring though
-	saved := database.GoogleNewsInsert(jsonNews, googleNews.Title, googleNews.Image.URL, wg)
+	saved := database.GoogleNewsInsert(jsonNews, googleNews.Title, googleNews.Image.URL)
 
 	if saved {
 		end := time.Since(start)
@@ -164,7 +193,6 @@ func GoogleNewsDataSetter(googleNews GoogleNewsResults, wg *sync.WaitGroup) {
 		return
 	}
 
-	// wg.Done()
 	fmt.Println("did not save!")
 }
 
