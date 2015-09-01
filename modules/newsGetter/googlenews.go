@@ -49,7 +49,7 @@ func TopicsList() Topics {
 // GetterLanguages language for news getters
 func GetterLanguages() []string {
 	//ned=en_ph
-	return []string{"en", "en_ph", "jp"}
+	return database.Languages()
 }
 
 // StartGoogleNews start collecting google news

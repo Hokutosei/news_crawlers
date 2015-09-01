@@ -11,8 +11,7 @@ import (
 )
 
 var (
-	newsIndexKeySlice = []string{"index", "ids"}
-	newsIndexIDS      []bson.ObjectId
+	newsIndexIDS []bson.ObjectId
 )
 
 // NewsIndexCache make an index news for fast access
@@ -20,15 +19,19 @@ func NewsIndexCache() {
 	start := time.Now()
 	fmt.Println("starting news index cache...")
 
-	result, err := database.NewsIndexNewsIDS()
-	if err != nil {
-		return
-	}
+	for _, lang := range database.Languages() {
+		newsIndexKeySlice := []string{"index", "ids"}
+		result, err := database.NewsIndexNewsIDS(lang)
+		if err != nil {
+			continue
+		}
+		newsIndexKeySlice = append(newsIndexKeySlice, lang)
 
-	key := RedisKeyGen(newsIndexKeySlice...)
-	PushIDredis(key, result...)
-	utils.Info(fmt.Sprintf("news index cache took: %v", time.Since(start)))
-	// stop <- 0
+		key := RedisKeyGen(newsIndexKeySlice...)
+		PushIDredis(key, result...)
+		utils.Info(fmt.Sprintf("news index language: %v cache took: %v", lang, time.Since(start)))
+
+	}
 }
 
 // PushIDredis util to push bulk id to redis w/key

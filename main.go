@@ -32,7 +32,7 @@ func CalcLoopDlay() int {
 func main() {
 	fmt.Println("starting!")
 	// strt getting analytics
-	// InitNewRelic()
+	InitNewRelic()
 
 	// config.StartEtcd()
 

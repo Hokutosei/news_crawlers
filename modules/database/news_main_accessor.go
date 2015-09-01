@@ -48,13 +48,13 @@ type NewsIds struct {
 }
 
 // NewsIndexNewsIDS retrieve all news index ids and save to cache MAIN
-func NewsIndexNewsIDS() ([]NewsIds, error) {
+func NewsIndexNewsIDS(lang string) ([]NewsIds, error) {
 	sc := SessionCopy()
 	c := sc.DB(Db).C(NewsMainCollection)
 	defer sc.Close()
 
 	var aggregatedNews []NewsIds
-	err := c.Find(bson.M{"url": bson.M{"$ne": ""}}).Select(bson.M{"_id": 1}).Sort("-_id", "-score", "image_url").Limit(searchLimitItems).All(&aggregatedNews)
+	err := c.Find(bson.M{"language": lang, "url": bson.M{"$ne": ""}}).Select(bson.M{"_id": 1}).Sort("-_id", "-score", "image_url").Limit(searchLimitItems).All(&aggregatedNews)
 	if err != nil {
 		fmt.Println(err)
 		return aggregatedNews, err
