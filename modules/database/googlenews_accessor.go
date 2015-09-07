@@ -38,18 +38,32 @@ func GoogleNewsFindIfExist(title string, imgURL string, sc *mongodb.Session) boo
 
 	var result map[string]interface{}
 	// encodedTitle := utils.ToUtf8(title)
-	c.Find(bson.M{"title": title, "image_url": imgURL}).One(&result)
+	c.Find(bson.M{"title": title}).One(&result)
 	// c.Find(bson.M{"image_url": imgURL}).One(&result)
 
 	// debug
-	fmt.Println(imgURL)
 	fmt.Println(result["image_url"])
-	fmt.Println(title)
 	fmt.Println(result["title"])
+	fmt.Println(title)
+	fmt.Println(imgURL)
+	fmt.Println(result == nil)
 	fmt.Println("-----------------------------------------")
 	// validate if any record found
+
+	// return true if search is nil
+	if result == nil {
+		return true
+	}
+
+	// else do some check
 	if result != nil ||
-		title == result["title"] ||
+		title == result["title"] {
+		return false
+	}
+
+	if result != nil ||
+		result["image_url"] != " " ||
+		result["image_url"] != nil ||
 		imgURL == result["image_url"] {
 		return false
 	}
