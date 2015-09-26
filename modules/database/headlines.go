@@ -36,10 +36,10 @@ func Headlines(from time.Duration, to time.Duration) []string {
 	var results []HeadlineNewsStruct
 	query := []bson.M{
 		{"$match": bson.M{
-			"created_at":     bson.M{"$gte": gte, "$lte": lte},
-			"image.url":      bson.M{"$ne": ""},
-			"image.tbheight": bson.M{"$gte": 50},
-			"score":          bson.M{"$gte": 1},
+			// "created_at": bson.M{"$gte": gte, "$lte": lte},
+			"image.url": bson.M{"$ne": ""},
+			// "image.tbheight": bson.M{"$gte": 50},
+			"score": bson.M{"$gte": 1},
 		}},
 		{"$group": bson.M{
 			"_id": "$category.initial",
@@ -58,8 +58,8 @@ func Headlines(from time.Duration, to time.Duration) []string {
 
 	// pipe and execute the query
 	c.Pipe(query).All(&results)
-	fmt.Println("took: ", time.Since(start))
-	// return ExtractIDsFromResult(results...)
+	fmt.Println("has items", len(results), "took: ", time.Since(start))
+	// return ExtractIDsFromResult(results...
 	return extractID(results...)
 }
 

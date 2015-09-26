@@ -10,7 +10,9 @@ import (
 var (
 	headLines                     = []string{"weekly", "headlines"}
 	daysAgoDuration time.Duration = 7
-	daysAgoRetries  time.Duration = 2
+	daysAgoRetries  time.Duration = 5
+
+	retries = 5
 )
 
 // Headlines get the most viewed/like news
@@ -25,15 +27,20 @@ func Headlines(loopDelay, loopRetry int) {
 		// searching := false
 
 		// ensure we have enough idSlice len
+		counter := 0
 		for len(idSlice) < loopRetry {
 			time.Sleep(time.Second * 5)
 			idSlice = database.Headlines(daysAgo, daysTo)
 			daysAgo++
 			daysTo++
-			if daysAgo >= daysAgoRetries {
+			fmt.Println(daysAgo)
+			fmt.Println(daysAgoRetries)
+			fmt.Println("retrying headline get... ", daysAgo)
+			if counter >= retries {
 				fmt.Println("retried so much headlines!")
 				break
 			}
+			counter++
 		}
 
 		if len(idSlice) < 5 {

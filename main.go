@@ -6,7 +6,6 @@ import (
 	"web_apps/news_crawlers/modules/config"
 	"web_apps/news_crawlers/modules/database"
 	"web_apps/news_crawlers/modules/newsGetter"
-	"web_apps/news_crawlers/modules/seed"
 	"web_apps/news_crawlers/modules/topRanking"
 )
 
@@ -41,10 +40,10 @@ func main() {
 	go database.StartRedis()
 
 	// newsGetter.StartHackerNews(loopDelay)
-	go topRanking.GenerateTopRanking(oneHour)
-	go topRanking.Headlines(350, loopRetry)
+	// go topRanking.GenerateTopRanking(oneHour)
+	go topRanking.Headlines(10, loopRetry)
 
-	go seed.SuggestRand(3, oneHour, 10)
+	// go seed.SuggestRand(3, oneHour, 10)
 
 	// main getter
 	newsGetter.StartGoogleNews(CalcLoopDlay())
